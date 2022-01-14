@@ -26,6 +26,8 @@ You need to run both the game server (Colyseus-based) and the client application
 
 3. `yarn; yarn start`
 
+In a browser, visit `localhost:3000` and you should be placed into a space automatically. Open up multiple browser windows to test pairing with other users or install ngrok and send a link to a friend.
+
 ---
 
-In a browser, visit `localhost:3000` and you should be placed into a space automatically. Open up multiple browser windows to test pairing with other users or install ngrok and send a link to a friend.
+*Special thanks to @kevinshen56714 for SkyOffice, from which this sample app is based.*
