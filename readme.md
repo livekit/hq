@@ -3,10 +3,10 @@ You need to run both the game server (Colyseus-based) and the client application
 ---
 
 #### To run the server:
-1. create a `.env` file at the top level and add values for the following keys:
-LIVEKIT_API_KEY=<YOUR_API_KEY>
-LIVEKIT_API_SECRET=<YOUR_API_SECRET>
-LIVEKIT_URL=wss://your-livekit-server-url
+1. create a `.env` file at the top level and add values for the following keys:  
+`LIVEKIT_API_KEY=<YOUR_API_KEY>`   
+`LIVEKIT_API_SECRET=<YOUR_API_SECRET>`   
+`LIVEKIT_URL=wss://your-livekit-server-url`   
 
 
 > Note: You can also run a LiveKit instance locally (see: https://github.com/livekit/livekit-server). [This guide](https://docs.livekit.io/guides/getting-started) 
@@ -20,7 +20,7 @@ LIVEKIT_URL=wss://your-livekit-server-url
 1. `cd client`
 
 2. create a `.env` (or `.env.local` if running locally) file at the top level and add values for the following keys:
-`REACT_APP_SERVER_URL=https://url-to-the-game-server-above`
+`REACT_APP_SERVER_URL=https://url-to-the-game-server-above`  
 
 > Note: If you run the game server locally, use `http://localhost:2567` as the value for `REACT_APP_SERVER_URL`
 
