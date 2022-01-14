@@ -7,8 +7,6 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { closeComputerDialog } from '../stores/ComputerStore'
 
-import Video from './Video'
-
 const Backdrop = styled.div`
   position: fixed;
   top: 0;
@@ -77,7 +75,7 @@ const VideoGrid = styled.div`
 function VideoContainer({ playerName, stream }) {
   return (
     <div className="video-container">
-      <Video srcObject={stream} autoPlay></Video>
+      {/* <Video srcObject={stream} autoPlay></Video> */}
       {playerName && <div className="player-name">{playerName}</div>}
     </div>
   )

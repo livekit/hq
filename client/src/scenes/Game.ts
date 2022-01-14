@@ -20,9 +20,18 @@ import { ItemType } from '../../../types/Items'
 import store from '../stores'
 import { setFocused, setShowChat } from '../stores/ChatStore'
 
+type ShooterKeys = {
+  W: Phaser.Input.Keyboard.Key
+  S: Phaser.Input.Keyboard.Key
+  A: Phaser.Input.Keyboard.Key
+  D: Phaser.Input.Keyboard.Key
+}
+
+export type NavKeys = ShooterKeys & Phaser.Types.Input.Keyboard.CursorKeys
+
 export default class Game extends Phaser.Scene {
   network!: Network
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
+  private cursors!: NavKeys
   private keyE!: Phaser.Input.Keyboard.Key
   private keyR!: Phaser.Input.Keyboard.Key
   private map!: Phaser.Tilemaps.Tilemap
@@ -38,11 +47,17 @@ export default class Game extends Phaser.Scene {
   }
 
   registerKeys() {
-    this.cursors = this.input.keyboard.createCursorKeys()
+    this.cursors = {
+      ...this.input.keyboard.createCursorKeys(),
+      ...(this.input.keyboard.addKeys('W,S,A,D') as ShooterKeys)
+    }
+
     // maybe we can have a dedicated method for adding keys if more keys are needed in the future
     this.keyE = this.input.keyboard.addKey('E')
     this.keyR = this.input.keyboard.addKey('R')
     this.input.keyboard.disableGlobalCapture()
+
+    store.dispatch(setShowChat(false))
     this.input.keyboard.on('keydown-ENTER', (event) => {
       store.dispatch(setShowChat(true))
       store.dispatch(setFocused(true))
@@ -238,7 +253,7 @@ export default class Game extends Phaser.Scene {
   }
 
   private handlePlayersOverlap(myPlayer, otherPlayer) {
-    otherPlayer.makeCall(myPlayer, this.network?.webRTC)
+    otherPlayer.makeCall(myPlayer, this.network?.liveKit)
   }
 
   private handleItemUserAdded(playerId: string, itemId: string, itemType: ItemType) {

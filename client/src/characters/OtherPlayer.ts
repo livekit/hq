@@ -2,8 +2,8 @@ import Phaser from 'phaser'
 import Player from './Player'
 import MyPlayer from './MyPlayer'
 import { sittingShiftData } from './Player'
-import WebRTC from '../web/WebRTC'
 import { Event, phaserEvents } from '../events/EventCenter'
+import LiveKit from '../web/LiveKit'
 
 export default class OtherPlayer extends Player {
   private targetPosition: [number, number]
@@ -29,23 +29,19 @@ export default class OtherPlayer extends Player {
     this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body
   }
 
-  makeCall(myPlayer: MyPlayer, webRTC: WebRTC) {
+  makeCall(myPlayer: MyPlayer, liveKit: LiveKit) {
     this.myPlayer = myPlayer
-    const myPlayerId = myPlayer.playerId
+
     if (
       !this.connected &&
       this.connectionBufferTime >= 750 &&
       myPlayer.readyToConnect &&
-      this.readyToConnect
+      this.readyToConnect &&
+      liveKit.hasParticipant(this.playerId)
     ) {
-      if (
-        (myPlayer.videoConnected && !this.videoConnected) ||
-        (myPlayer.videoConnected && this.videoConnected && myPlayerId > this.playerId)
-      ) {
-        webRTC.connectToNewUser(this.playerId)
-        this.connected = true
-        this.connectionBufferTime = 0
-      }
+      liveKit.connectToNewUser(this.playerId)
+      this.connected = true
+      this.connectionBufferTime = 0
     }
   }
 

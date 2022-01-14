@@ -1,61 +1,70 @@
-import React from 'react'
-import styled from 'styled-components'
-
+import { useState, useEffect } from 'react'
 import { useAppSelector } from './hooks'
 
-import RoomSelectionDialog from './components/RoomSelectionDialog'
-import LoginDialog from './components/LoginDialog'
-import ComputerDialog from './components/ComputerDialog'
-import WhiteboardDialog from './components/WhiteboardDialog'
-import VideoConnectionDialog from './components/VideoConnectionDialog'
-import Chat from './components/Chat'
-import HelperButtonGroup from './components/HelperButtonGroup'
+import { Room } from 'livekit-client'
 
-const Backdrop = styled.div`
-  position: absolute;
-  height: 100%;
-  width: 100%;
-`
+import { GlobalStyles } from '@livekit/livekit-chakra-theme'
+import phaserGame from './PhaserGame'
+import Bootstrap from './scenes/Bootstrap'
+import Game from './scenes/Game'
+
+import {
+  Box,
+} from '@chakra-ui/react'
+
+import LoginDialog from './components/LoginDialog'
+import GameLoading from './components/GameLoading'
+import HUD from './components/HUD'
 
 function App() {
+  const game = phaserGame.scene.keys.game as Game
+
+  //preload assets and test connecting to lobby
+  const gameLoaded = useAppSelector((state) => state.game.gameLoaded)
+  const connectedToGameServer = useAppSelector((state) => state.game.gameServerConnected)
+  const gameLaunched = useAppSelector((state) => state.game.gameLaunched)
+  
+  const playerName = useAppSelector((state) => state.user.playerName)
+  const avatarKey = useAppSelector((state) => state.user.avatarKey)
   const loggedIn = useAppSelector((state) => state.user.loggedIn)
-  const computerDialogOpen = useAppSelector((state) => state.computer.computerDialogOpen)
-  const whiteboardDialogOpen = useAppSelector((state) => state.whiteboard.whiteboardDialogOpen)
-  const videoConnected = useAppSelector((state) => state.user.videoConnected)
-  const roomJoined = useAppSelector((state) => state.room.roomJoined)
+
+  const [room, setRoom] = useState<Room | undefined>()
+  
+  useEffect(() => {
+    if (gameLoaded && connectedToGameServer) {
+      const bootstrap = phaserGame.scene.keys.bootstrap as Bootstrap
+      bootstrap.network
+        .joinOrCreatePublic()
+        .then(() => bootstrap.launchGame())
+        .catch((error) => console.error(error))
+    }
+  }, [gameLoaded, connectedToGameServer])
+
+  useEffect(() => {
+    if (loggedIn) {
+      const bootstrap = phaserGame.scene.keys.bootstrap as Bootstrap
+      bootstrap.network.startRtc(playerName!, avatarKey!)
+        .then(room => {
+          setRoom(room)
+          game.network.readyToConnect()
+        })
+    }
+  }, [loggedIn])
 
   let ui: JSX.Element
-  if (loggedIn) {
-    if (computerDialogOpen) {
-      /* Render ComputerDialog if user is using a computer. */
-      ui = <ComputerDialog />
-    } else if (whiteboardDialogOpen) {
-      /* Render WhiteboardDialog if user is using a whiteboard. */
-      ui = <WhiteboardDialog />
-    } else {
-      ui = (
-        /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
-        <>
-          <Chat />
-          {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
-          {!videoConnected && <VideoConnectionDialog />}
-        </>
-      )
-    }
-  } else if (roomJoined) {
-    /* Render LoginDialog if not logged in but selected a room. */
+  if (loggedIn && room) {
+    ui = <HUD room={room} />
+  } else if (gameLaunched) {
     ui = <LoginDialog />
   } else {
-    /* Render RoomSelectionDialog if yet selected a room. */
-    ui = <RoomSelectionDialog />
+    ui = <GameLoading />
   }
 
   return (
-    <Backdrop>
+    <Box pos="absolute" w="100%" h="100%">
+      <GlobalStyles />
       {ui}
-      {/* Render HelperButtonGroup if no dialogs are opened. */}
-      {!computerDialogOpen && !whiteboardDialogOpen && <HelperButtonGroup />}
-    </Backdrop>
+    </Box>
   )
 }
 

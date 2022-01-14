@@ -1,35 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RoomAvailable } from 'colyseus.js'
-import { RoomType } from '../../../types/Rooms'
 
-interface RoomInterface extends RoomAvailable {
-  name?: string
+interface RoomState {
+  roomId: string,
+  roomName: string,
+  roomDescription: string,
+  linkedUsers: string[],
 }
 
-/**
- * Colyseus' real time room list always includes the public lobby so we have to remove it manually.
- */
-const isCustomRoom = (room: RoomInterface) => {
-  return room.name === RoomType.CUSTOM
-}
+const initialState = {
+  roomId: '',
+  roomName: '',
+  roomDescription: '',
+  linkedUsers: [],
+} as RoomState
 
 export const roomSlice = createSlice({
   name: 'room',
-  initialState: {
-    lobbyJoined: false,
-    roomJoined: false,
-    roomId: '',
-    roomName: '',
-    roomDescription: '',
-    availableRooms: new Array<RoomAvailable>(),
-  },
+  initialState,
   reducers: {
-    setLobbyJoined: (state, action: PayloadAction<boolean>) => {
-      state.lobbyJoined = action.payload
-    },
-    setRoomJoined: (state, action: PayloadAction<boolean>) => {
-      state.roomJoined = action.payload
-    },
     setJoinedRoomData: (
       state,
       action: PayloadAction<{ id: string; name: string; description: string }>
@@ -38,33 +26,22 @@ export const roomSlice = createSlice({
       state.roomName = action.payload.name
       state.roomDescription = action.payload.description
     },
-    setAvailableRooms: (state, action: PayloadAction<RoomAvailable[]>) => {
-      state.availableRooms = action.payload.filter((room) => isCustomRoom(room))
+
+    connectUser: (state, action: PayloadAction<string>) => {
+      state.linkedUsers = [...state.linkedUsers, action.payload]
     },
-    addAvailableRooms: (state, action: PayloadAction<{ roomId: string; room: RoomAvailable }>) => {
-      if (!isCustomRoom(action.payload.room)) return
-      const roomIndex = state.availableRooms.findIndex(
-        (room) => room.roomId === action.payload.roomId
-      )
-      if (roomIndex !== -1) {
-        state.availableRooms[roomIndex] = action.payload.room
-      } else {
-        state.availableRooms.push(action.payload.room)
-      }
-    },
-    removeAvailableRooms: (state, action: PayloadAction<string>) => {
-      state.availableRooms = state.availableRooms.filter((room) => room.roomId !== action.payload)
-    },
+
+    disconnectUser: (state, action: PayloadAction<string>) => {
+      const newLinkedUsers = state.linkedUsers.filter(uid => uid !== action.payload)
+      state.linkedUsers = newLinkedUsers
+    }
   },
 })
 
 export const {
-  setLobbyJoined,
-  setRoomJoined,
   setJoinedRoomData,
-  setAvailableRooms,
-  addAvailableRooms,
-  removeAvailableRooms,
+  connectUser,
+  disconnectUser,
 } = roomSlice.actions
 
 export default roomSlice.reducer

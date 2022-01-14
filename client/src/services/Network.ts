@@ -3,17 +3,15 @@ import { IComputer, IOfficeState, IPlayer, IWhiteboard } from '../../../types/IO
 import { Message } from '../../../types/Messages'
 import { IRoomData, RoomType } from '../../../types/Rooms'
 import { ItemType } from '../../../types/Items'
-import WebRTC from '../web/WebRTC'
 import { phaserEvents, Event } from '../events/EventCenter'
 import store from '../stores'
 import { setSessionId, setPlayerNameMap, removePlayerNameMap } from '../stores/UserStore'
 import {
-  setLobbyJoined,
   setJoinedRoomData,
-  setAvailableRooms,
-  addAvailableRooms,
-  removeAvailableRooms,
 } from '../stores/RoomStore'
+import {
+  setGameServerConnected,
+} from '../stores/GameStore'
 import {
   pushChatMessage,
   pushPlayerJoinedMessage,
@@ -21,23 +19,26 @@ import {
 } from '../stores/ChatStore'
 import { setWhiteboardUrls } from '../stores/WhiteboardStore'
 
+import LiveKit from '../web/LiveKit'
+import { Room as LiveKitRoom } from 'livekit-client'
+
 export default class Network {
   private client: Client
-  private room?: Room<IOfficeState>
   private lobby!: Room
-  webRTC?: WebRTC
-
+  room?: Room<IOfficeState>
+  liveKit?: LiveKit
+  
   mySessionId!: string
 
   constructor() {
-    const protocol = window.location.protocol.replace('http', 'ws')
-    const endpoint =
-      process.env.NODE_ENV === 'production'
-        ? `wss://sky-office.herokuapp.com`
-        : `${protocol}//${window.location.hostname}:2567`
+    let endpoint = process.env.REACT_APP_SERVER_URL
+    endpoint = endpoint?.replace('http', 'ws')
+    
     this.client = new Client(endpoint)
+    this.liveKit = new LiveKit()
+
     this.joinLobbyRoom().then(() => {
-      store.dispatch(setLobbyJoined(true))
+      store.dispatch(setGameServerConnected(true))
     })
 
     phaserEvents.on(Event.MY_PLAYER_NAME_CHANGE, this.updatePlayerName, this)
@@ -51,18 +52,6 @@ export default class Network {
    */
   async joinLobbyRoom() {
     this.lobby = await this.client.joinOrCreate(RoomType.LOBBY)
-
-    this.lobby.onMessage('rooms', (rooms) => {
-      store.dispatch(setAvailableRooms(rooms))
-    })
-
-    this.lobby.onMessage('+', ([roomId, room]) => {
-      store.dispatch(addAvailableRooms({ roomId, room }))
-    })
-
-    this.lobby.onMessage('-', (roomId) => {
-      store.dispatch(removeAvailableRooms(roomId))
-    })
   }
 
   // method to join the public lobby
@@ -89,6 +78,16 @@ export default class Network {
     this.initialize()
   }
 
+  async startRtc(name: string, avatarKey: string): Promise<LiveKitRoom | undefined> {
+    if (!this.room) {
+      throw new Error("Room doesn't exist when trying to start RTC!")
+    }
+    return await this.liveKit?.connect(this.room.id, this.mySessionId, {
+      userName: name,
+      avatarKey,
+    })
+  }
+
   // set up all network listeners before the game starts
   initialize() {
     if (!this.room) return
@@ -96,7 +95,6 @@ export default class Network {
     this.lobby.leave()
     this.mySessionId = this.room.sessionId
     store.dispatch(setSessionId(this.room.sessionId))
-    this.webRTC = new WebRTC(this.mySessionId, this)
 
     // new instance added to the players MapSchema
     this.room.state.players.onAdd = (player: IPlayer, key: string) => {
@@ -121,8 +119,8 @@ export default class Network {
     // an instance removed from the players MapSchema
     this.room.state.players.onRemove = (player: IPlayer, key: string) => {
       phaserEvents.emit(Event.PLAYER_LEFT, key)
-      this.webRTC?.deleteVideoStream(key)
-      this.webRTC?.deleteOnCalledVideoStream(key)
+      console.log("removed: ", key)
+      this.liveKit?.deleteVideoStream(key)
       store.dispatch(pushPlayerLeftMessage(player.name))
       store.dispatch(removePlayerNameMap(key))
     }
@@ -172,7 +170,8 @@ export default class Network {
 
     // when a peer disconnects with myPeer
     this.room.onMessage(Message.DISCONNECT_STREAM, (clientId: string) => {
-      this.webRTC?.deleteOnCalledVideoStream(clientId)
+      console.log("peer disconnected: ", clientId)
+      this.liveKit?.deleteVideoStream(clientId)
     })
 
     // when a computer user stops sharing screen
@@ -239,6 +238,7 @@ export default class Network {
   // method to send player name to Colyseus server
   updatePlayerName(currentName: string) {
     this.room?.send(Message.UPDATE_PLAYER_NAME, { name: currentName })
+    this.liveKit?.updateParticipantName(currentName)
   }
 
   // method to send ready-to-connect signal to Colyseus server
@@ -256,7 +256,7 @@ export default class Network {
   // method to send stream-disconnection signal to Colyseus server
   playerStreamDisconnect(id: string) {
     this.room?.send(Message.DISCONNECT_STREAM, { clientId: id })
-    this.webRTC?.deleteVideoStream(id)
+    this.liveKit?.deleteVideoStream(id)
   }
 
   connectToComputer(id: string) {

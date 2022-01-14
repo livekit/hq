@@ -5,9 +5,16 @@ import { Server, LobbyRoom } from 'colyseus'
 import { monitor } from '@colyseus/monitor'
 import { RoomType } from '../types/Rooms'
 
-// import socialRoutes from "@colyseus/social/express"
-
+import { AccessToken } from 'livekit-server-sdk'
 import { SkyOffice } from './rooms/SkyOffice'
+
+require('dotenv').config()
+
+const API_KEY = process.env.LIVEKIT_API_KEY
+const API_SECRET = process.env.LIVEKIT_API_SECRET
+const RTC_URL = process.env.LIVEKIT_URL
+
+// import socialRoutes from "@colyseus/social/express"
 
 const port = Number(process.env.PORT || 2567)
 const app = express()
@@ -41,6 +48,28 @@ gameServer.define(RoomType.CUSTOM, SkyOffice).enableRealtimeListing()
 
 // register colyseus monitor AFTER registering your room handlers
 app.use('/colyseus', monitor())
+
+app.post('/token', (req: any, res: any) => {
+  const room = req.body.roomName
+  const identity = req.body.identity
+  const metadata = req.body.metadata
+
+  const at = new AccessToken(API_KEY, API_SECRET, {
+    identity,
+  })
+  at.addGrant({ 
+    roomJoin: true, 
+    room,
+  })
+  if (metadata) {
+    at.metadata = metadata
+  }
+  
+  res.json({
+    token: at.toJwt(),
+    url: RTC_URL,
+  })
+})
 
 gameServer.listen(port)
 console.log(`Listening on ws://localhost:${port}`)
