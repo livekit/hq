@@ -1,5 +1,3 @@
-Originally forked from: https://github.com/kevinshen56714/SkyOffice
-
 You need to run both the game server (Colyseus-based) and the client application (CRA-based).
 
 ---
