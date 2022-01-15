@@ -43,7 +43,7 @@ class LiveKit {
     identity: string, 
     metadata: ParticipantMetadata
   ): Promise<Room | undefined> {
-    const res = await fetch(`${LiveKit.SERVER_URL}/token?`, {
+    const res = await fetch(`${LiveKit.SERVER_URL}/token`, {
       method: 'POST',
       cache: 'no-cache',
       headers: {
