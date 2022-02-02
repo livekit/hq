@@ -12,7 +12,7 @@ require('dotenv').config()
 
 const API_KEY = process.env.LIVEKIT_API_KEY
 const API_SECRET = process.env.LIVEKIT_API_SECRET
-const RTC_URL = process.env.LIVEKIT_URL
+const RTC_URL = process.env.LIVEKIT_WS_URL
 
 // import socialRoutes from "@colyseus/social/express"
 

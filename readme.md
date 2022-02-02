@@ -6,7 +6,7 @@ You need to run both the game server (Colyseus-based) and the client application
 1. create a `.env` file at the top level and add values for the following keys:  
 `LIVEKIT_API_KEY=<YOUR_API_KEY>`   
 `LIVEKIT_API_SECRET=<YOUR_API_SECRET>`   
-`LIVEKIT_URL=wss://your-livekit-server-url`   
+`LIVEKIT_WS_URL=wss://your-livekit-server-url`
 
 
 > Note: You can also run a LiveKit instance locally (see: https://github.com/livekit/livekit-server). [This guide](https://docs.livekit.io/guides/getting-started) 
