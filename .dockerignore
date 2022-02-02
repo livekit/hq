@@ -1,0 +1,8 @@
+/.cache
+/dist
+node_modules
+/client/node_modules
+/.DS_Store
+/server/lib
+*.env
+.git

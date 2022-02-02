@@ -1,0 +1,21 @@
+version: '3.0'
+services:
+  hq-server:
+    image: hq-server
+    build: .
+    ports:
+      - "127.0.0.1:2567:2567"
+    environment:
+      - "LIVEKIT_API_KEY=${LIVEKIT_API_KEY}"
+      - "LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}"
+      - "LIVEKIT_URL=${LIVEKIT_URL}"
+  
+  hq-client:
+    image: hq-client
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    ports:
+      - "127.0.0.1:3000:80"
+    environment:
+      - "REACT_APP_SERVER_URL=${REACT_APP_SERVER_URL}"
