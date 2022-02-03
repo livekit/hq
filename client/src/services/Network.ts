@@ -27,13 +27,20 @@ export default class Network {
   private lobby!: Room
   room?: Room<IOfficeState>
   liveKit?: LiveKit
-  
+
   mySessionId!: string
 
   constructor() {
     let endpoint = process.env.REACT_APP_SERVER_URL
-    endpoint = endpoint?.replace('http', 'ws')
-    
+    if (endpoint) {
+      const epURL = new URL(endpoint)
+      if (epURL.protocol === 'http') {
+        epURL.protocol = 'ws'
+      } else {
+        epURL.protocol = 'wss'
+      }
+      endpoint = epURL.origin
+    }
     this.client = new Client(endpoint)
     this.liveKit = new LiveKit()
 
