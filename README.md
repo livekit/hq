@@ -4,7 +4,7 @@ You need to run both the game server (Colyseus-based) and the client application
 
 #### To run the server:
 
-1. create `/server/.env` and add values for the following keys:  
+1. create `./server/.env` and add values for the following keys:  
    `LIVEKIT_API_KEY=<YOUR_API_KEY>`  
    `LIVEKIT_API_SECRET=<YOUR_API_SECRET>`  
    `LIVEKIT_WS_URL=wss://your-livekit-server-url`
