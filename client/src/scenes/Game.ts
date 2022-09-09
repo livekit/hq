@@ -49,7 +49,7 @@ export default class Game extends Phaser.Scene {
   registerKeys() {
     this.cursors = {
       ...this.input.keyboard.createCursorKeys(),
-      ...(this.input.keyboard.addKeys('W,S,A,D') as ShooterKeys)
+      ...(this.input.keyboard.addKeys('W,S,A,D') as ShooterKeys),
     }
 
     // maybe we can have a dedicated method for adding keys if more keys are needed in the future
@@ -226,6 +226,11 @@ export default class Game extends Phaser.Scene {
     const otherPlayer = this.add.otherPlayer(newPlayer.x, newPlayer.y, 'adam', id, newPlayer.name)
     this.otherPlayers.add(otherPlayer)
     this.otherPlayerMap.set(id, otherPlayer)
+    this.network.liveKit?.updateParticipantPosition(
+      otherPlayer.playerId,
+      otherPlayer.x,
+      otherPlayer.y
+    )
   }
 
   // function to remove the player who left from the otherPlayer group
@@ -250,6 +255,8 @@ export default class Game extends Phaser.Scene {
   private handlePlayerUpdated(field: string, value: number | string, id: string) {
     const otherPlayer = this.otherPlayerMap.get(id)
     otherPlayer?.updateOtherPlayer(field, value)
+    // console.log("update player position")
+    this.network?.liveKit?.updateParticipantPosition(id, otherPlayer?.x, otherPlayer?.y)
   }
 
   private handlePlayersOverlap(myPlayer, otherPlayer) {
@@ -285,6 +292,7 @@ export default class Game extends Phaser.Scene {
     if (this.myPlayer && this.network) {
       this.playerSelector.update(this.myPlayer, this.cursors)
       this.myPlayer.update(this.playerSelector, this.cursors, this.keyE, this.keyR, this.network)
+      this.network.liveKit?.updateLocalParticipant(this.myPlayer.x, this.myPlayer.y)
     }
   }
 }

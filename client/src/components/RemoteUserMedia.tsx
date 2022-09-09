@@ -8,7 +8,7 @@ const RemoteUserMedia = ({ participant }: ParticipantProps) => {
 
   return (
     <React.Fragment>
-      <UserStream key={participant.sid} participant={participant} />
+      <UserStream key={participant.sid} participant={participant} ignoreAudio={true}/>
       { screenSharePublication && <ScreenStream participant={participant} /> }
     </React.Fragment>
   )

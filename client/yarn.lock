@@ -8138,28 +8138,31 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-"livekit-client@>=0.15.3, <1.0.0", livekit-client@^0.15.4:
-  version "0.15.4"
-  resolved "https://registry.yarnpkg.com/livekit-client/-/livekit-client-0.15.4.tgz#161f8c7dd0e08d523e57106a72c6a59ba0ae8a0e"
-  integrity sha512-fmk+trFE2SCiCUQS1iScFn770y4XxbLESstJ4Z/NcJ5bRv39y/xgq0XtfiviL/99mtj0xm2BM6wg+0N2DsU33A==
+livekit-client@0.17.1:
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/livekit-client/-/livekit-client-0.17.1.tgz#83fd76c2ea2a5c813e3fee6fbfb527c3b83c8b87"
+  integrity sha512-Q+aaOoNjAfGU+L9yvcKPxtYITkLA7tYTW1Ldm4KNhTFOwmNaSMNzP7zTwf3YELaUg3shzUw85YhiAZUBFVOCyg==
   dependencies:
     events "^3.3.0"
     loglevel "^1.8.0"
     protobufjs "^6.11.2"
     ts-debounce "^3.0.0"
-    ua-parser-js "^1.0.2"
-    webrtc-adapter "^8.1.0"
+    typed-emitter "^2.1.0"
+    webrtc-adapter "^8.1.1"
 
-livekit-react@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/livekit-react/-/livekit-react-0.6.1.tgz#c36254045cac9687be9191352299a5ddc86b9783"
-  integrity sha512-WlzQ8p89WaCuTKmOfsgXKfp3mqerc4ojH98WiCmcd7q20mn/SKKSA3nzTR6LrMUiPyjE9n4GI6hF1WJuZvoU/A==
+"livekit-plugin-spatial@link:../../plugin-spatial-js":
+  version "0.0.0"
+  uid ""
+
+livekit-react@0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/livekit-react/-/livekit-react-0.7.1.tgz#87f07b5950a314729912a9ecd9d6ff9239c9ce21"
+  integrity sha512-2qroIzjX5yWqJxHpzwaVf2uJv/fNHdBc/Ukl/AI+2G4MIjAL1g36LKePVUyO/ovskftMPJTsn/rGDHZKBq/UTQ==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^1.2.35"
     "@fortawesome/free-solid-svg-icons" "^5.15.4"
     "@fortawesome/react-fontawesome" "^0.1.16"
     "@types/react-responsive" "^8.0.2"
-    livekit-client ">=0.15.3, <1.0.0"
     react-aspect-ratio "^1.0.50"
     react-responsive "^8.2.0"
     react-tiny-popover "^6.0.5"
@@ -11398,6 +11401,13 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
+rxjs@^7.5.2:
+  version "7.5.5"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.5.5.tgz#2ebad89af0f560f460ad5cc4213219e1f7dd4e9f"
+  integrity sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw==
+  dependencies:
+    tslib "^2.1.0"
+
 safe-buffer@5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
@@ -12519,6 +12529,11 @@ ts-debounce@^3.0.0:
   resolved "https://registry.yarnpkg.com/ts-debounce/-/ts-debounce-3.0.0.tgz#9beedf59c04de3b5bef8ff28bd6885624df357be"
   integrity sha512-7jiRWgN4/8IdvCxbIwnwg2W0bbYFBH6BxFqBjMKk442t7+liF2Z1H6AUCcl8e/pD93GjPru+axeiJwFmRww1WQ==
 
+ts-debounce@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/ts-debounce/-/ts-debounce-4.0.0.tgz#33440ef64fab53793c3d546a8ca6ae539ec15841"
+  integrity sha512-+1iDGY6NmOGidq7i7xZGA4cm8DAa6fqdYcvO5Z6yBevH++Bdo9Qt/mN0TzHUgcCcKv1gmh9+W5dHqz8pMWbCbg==
+
 ts-pnp@1.2.0, ts-pnp@^1.1.6:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
@@ -12618,6 +12633,13 @@ type@^2.5.0:
   resolved "https://registry.yarnpkg.com/type/-/type-2.5.0.tgz#0a2e78c2e77907b252abe5f298c1b01c63f0db3d"
   integrity sha512-180WMDQaIMm3+7hGXWf12GtdniDEy7nYcyFMKJn/eZz/6tSLXrUN9V0wKSbMjej0I1WHWbpREDEKHtqPQa9NNw==
 
+typed-emitter@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/typed-emitter/-/typed-emitter-2.1.0.tgz#ca78e3d8ef1476f228f548d62e04e3d4d3fd77fb"
+  integrity sha512-g/KzbYKbH5C2vPkaXGu8DJlHrGKHLsM25Zg9WuC9pMGfuvT+X25tZQWo5fK1BjBm8+UrVE9LDCvaY0CQk+fXDA==
+  optionalDependencies:
+    rxjs "^7.5.2"
+
 typedarray-to-buffer@^3.1.5:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/typedarray-to-buffer/-/typedarray-to-buffer-3.1.5.tgz#a97ee7a9ff42691b9f783ff1bc5112fe3fca9080"
@@ -12639,11 +12661,6 @@ typescript@^4.4.3:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
   integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
-
-ua-parser-js@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-1.0.2.tgz#e2976c34dbfb30b15d2c300b2a53eac87c57a775"
-  integrity sha512-00y/AXhx0/SsnI51fTc0rLRmafiGOM4/O+ny10Ps7f+j/b8p/ZY11ytMgznXkOVo4GQ+KwQG5UQLkLGirsACRg==
 
 unbox-primitive@^1.0.1:
   version "1.0.1"
@@ -13089,7 +13106,7 @@ webrtc-adapter@^7.7.1:
     rtcpeerconnection-shim "^1.2.15"
     sdp "^2.12.0"
 
-webrtc-adapter@^8.1.0:
+webrtc-adapter@^8.1.1:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/webrtc-adapter/-/webrtc-adapter-8.1.1.tgz#e4a4dfd1b5085d119da40c4efc0147f7d0961cba"
   integrity sha512-1yXevP7TeZGmklEXkvQVrZp3fOSJlLeXNGCA7NovQokxgP3/e2T3EVGL0eKU87S9vKppWjvRWqnJeSANEspOBg==

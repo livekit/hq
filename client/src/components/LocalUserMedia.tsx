@@ -20,8 +20,14 @@ const LocalUserMedia = ({ room, onShareScreen }: LocalUserMediaProps) => {
   } = useParticipant(room.localParticipant)
   
   useEffect(() => {
-    room.localParticipant.enableCameraAndMicrophone()
+    room.localParticipant.enableCameraAndMicrophone();
   }, [])
+
+  const startAudio = async () => {
+    console.log("starting audio");
+    await room.startAudio();
+    console.log("audio started", room.canPlaybackAudio);
+  }
 
   return (
     <Flex
@@ -29,7 +35,8 @@ const LocalUserMedia = ({ room, onShareScreen }: LocalUserMediaProps) => {
       right="1rem"
       bottom="1rem"
       direction="column"
-      gap="1rem">
+      gap="1rem"
+      onClick={() => startAudio()}>
       { screenSharePublication && <ScreenStream participant={room.localParticipant} onShareScreen={onShareScreen} /> }
       <UserStream participant={room.localParticipant} />
     </Flex>

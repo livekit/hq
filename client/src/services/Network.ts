@@ -6,12 +6,8 @@ import { ItemType } from '../../../types/Items'
 import { phaserEvents, Event } from '../events/EventCenter'
 import store from '../stores'
 import { setSessionId, setPlayerNameMap, removePlayerNameMap } from '../stores/UserStore'
-import {
-  setJoinedRoomData,
-} from '../stores/RoomStore'
-import {
-  setGameServerConnected,
-} from '../stores/GameStore'
+import { setJoinedRoomData } from '../stores/RoomStore'
+import { setGameServerConnected } from '../stores/GameStore'
 import {
   pushChatMessage,
   pushPlayerJoinedMessage,
@@ -26,14 +22,15 @@ export default class Network {
   private client: Client
   private lobby!: Room
   room?: Room<IOfficeState>
-  liveKit?: LiveKit
-  
+  liveKit: LiveKit
+
   mySessionId!: string
 
   constructor() {
     let endpoint = process.env.REACT_APP_SERVER_URL
     endpoint = endpoint?.replace('http', 'ws')
-    
+    console.log('my endpoint', endpoint)
+
     this.client = new Client(endpoint)
     this.liveKit = new LiveKit()
 
@@ -82,7 +79,7 @@ export default class Network {
     if (!this.room) {
       throw new Error("Room doesn't exist when trying to start RTC!")
     }
-    return await this.liveKit?.connect(this.room.id, this.mySessionId, {
+    return await this.liveKit.connect(this.room.id, this.mySessionId, {
       userName: name,
       avatarKey,
     })
@@ -95,6 +92,10 @@ export default class Network {
     this.lobby.leave()
     this.mySessionId = this.room.sessionId
     store.dispatch(setSessionId(this.room.sessionId))
+
+    for (const [key, player] of this.room.state.players) {
+      this.liveKit.updateParticipantPosition(key, player.x, player.y)
+    }
 
     // new instance added to the players MapSchema
     this.room.state.players.onAdd = (player: IPlayer, key: string) => {
@@ -119,8 +120,8 @@ export default class Network {
     // an instance removed from the players MapSchema
     this.room.state.players.onRemove = (player: IPlayer, key: string) => {
       phaserEvents.emit(Event.PLAYER_LEFT, key)
-      console.log("removed: ", key)
-      this.liveKit?.deleteVideoStream(key)
+      console.log('removed: ', key)
+      this.liveKit.deleteVideoStream(key)
       store.dispatch(pushPlayerLeftMessage(player.name))
       store.dispatch(removePlayerNameMap(key))
     }
@@ -170,8 +171,8 @@ export default class Network {
 
     // when a peer disconnects with myPeer
     this.room.onMessage(Message.DISCONNECT_STREAM, (clientId: string) => {
-      console.log("peer disconnected: ", clientId)
-      this.liveKit?.deleteVideoStream(clientId)
+      console.log('peer disconnected: ', clientId)
+      this.liveKit.deleteVideoStream(clientId)
     })
 
     // when a computer user stops sharing screen
@@ -238,7 +239,7 @@ export default class Network {
   // method to send player name to Colyseus server
   updatePlayerName(currentName: string) {
     this.room?.send(Message.UPDATE_PLAYER_NAME, { name: currentName })
-    this.liveKit?.updateParticipantName(currentName)
+    this.liveKit.updateParticipantName(currentName)
   }
 
   // method to send ready-to-connect signal to Colyseus server
@@ -256,7 +257,7 @@ export default class Network {
   // method to send stream-disconnection signal to Colyseus server
   playerStreamDisconnect(id: string) {
     this.room?.send(Message.DISCONNECT_STREAM, { clientId: id })
-    this.liveKit?.deleteVideoStream(id)
+    this.liveKit.deleteVideoStream(id)
   }
 
   connectToComputer(id: string) {
